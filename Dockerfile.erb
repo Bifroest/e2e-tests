@@ -1,9 +1,10 @@
 FROM gliderlabs/alpine:3.3
 
+RUN echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 RUN apk add --no-cache openjdk8
-RUN apk add --no-cache maven
+RUN apk add --no-cache maven@testing
 
 COPY maven-repo /root/.m2
 COPY repos/<%= project %> /project
 
-ENTRYPOINT /usr/bin/mvn -f /project exec:java io.bifroest.commons.GenericMain <%= environment_class %>
+ENTRYPOINT /usr/share/java/maven-3.3.3/bin/mvn -f /project exec:java

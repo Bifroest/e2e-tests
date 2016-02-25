@@ -62,3 +62,13 @@ namespace :dockerfile do
 
   task :all => projects.keys
 end
+
+namespace :dockerimage do
+  projects.each do |project, _|
+    task project => "dockerfile:#{project}" do
+      sh "sudo docker build -f docker_files/#{project}/Dockerfile ."
+    end
+  end
+
+  task :all => projects.keys
+end
