@@ -1,0 +1,9 @@
+FROM gliderlabs/alpine:3.3
+
+RUN apk add --no-cache openjdk8
+RUN apk add --no-cache maven
+
+COPY maven-repo /root/.m2
+COPY repos/<%= project %> /project
+
+ENTRYPOINT /usr/bin/mvn -f /project exec:java io.bifroest.commons.GenericMain <%= environment_class %>

@@ -1,4 +1,6 @@
 
+require 'erb'
+
 projects = {
   'aggregator'      => %w(commons retentions),
   'balancing'       => %w(commons),
@@ -15,6 +17,19 @@ projects = {
 projects.each do |project, _|
   file "repos/#{project}" do
     sh "git clone git@github.com:Bifroest/#{project} repos/#{project}"
+  end
+
+  directory "docker_files/#{project}"
+
+  file "docker_files/#{project}/Dockerfile" => "docker_files/#{project}" do
+    environment_class= 'TODO'
+    b = binding
+    File.open("docker_files/#{project}/Dockerfile", 'w+') do |f|
+      template_file = File.read 'Dockerfile.erb'
+      template = ERB.new template_file
+      dockerfile = template.result b
+      f.write dockerfile
+    end
   end
 end
 
@@ -37,5 +52,13 @@ namespace :install do
   end
 
   desc "Install all projects"
+  task :all => projects.keys
+end
+
+namespace :dockerfile do
+  projects.each do |project, _|
+    task project => "docker_files/#{project}/Dockerfile"
+  end
+
   task :all => projects.keys
 end
