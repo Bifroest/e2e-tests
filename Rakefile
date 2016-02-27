@@ -13,6 +13,7 @@ projects = {
   'stream-rewriter' => %w(drains commons retentions cluster-client),
   'ymir'            => %w(commons retentions)
 }
+applications = %w(aggregator bifroest heimdall stream-rewriter ymir)
 
 projects.each do |project, _|
   file "repos/#{project}" do
@@ -57,18 +58,18 @@ end
 
 namespace :dockerfile do
   projects.each do |project, _|
-    task project => "docker_files/#{project}/Dockerfile"
+    task project => [ "docker_files/#{project}/Dockerfile", "install:#{project}" ]
   end
 
   task :all => projects.keys
 end
 
 namespace :dockerimage do
-  projects.each do |project, _|
-    task project => "dockerfile:#{project}" do
-      sh "sudo docker build -f docker_files/#{project}/Dockerfile ."
+  applications.each do |application|
+    task application => "dockerfile:#{application}" do
+      sh "sudo docker build -f docker_files/#{application}/Dockerfile -t 'bifroest/#{application}' ."
     end
   end
 
-  task :all => projects.keys
+  task :all => applications
 end
