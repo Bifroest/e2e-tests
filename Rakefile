@@ -58,7 +58,7 @@ end
 
 namespace :dockerfile do
   projects.each do |project, _|
-    task project => [ "docker_files/#{project}/Dockerfile", "install:#{project}" ]
+    task project => "docker_files/#{project}/Dockerfile"
   end
 
   task :all => projects.keys
@@ -66,7 +66,7 @@ end
 
 namespace :dockerimage do
   applications.each do |application|
-    task application => "dockerfile:#{application}" do
+    task application => [ "dockerfile:#{application}", "install:#{application}" ] do
       sh "sudo docker build -f docker_files/#{application}/Dockerfile -t 'bifroest/#{application}' ."
     end
   end

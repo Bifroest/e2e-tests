@@ -8,4 +8,6 @@ COPY maven-repo /maven-repo
 COPY settings.xml.docker /settings.xml
 COPY repos/<%= project %> /project
 
-ENTRYPOINT /usr/share/java/maven-3.3.3/bin/mvn -f /project --settings=/settings.xml exec:java
+WORKDIR /project
+
+ENTRYPOINT /usr/share/java/maven-3.3.3/bin/mvn -f /project --settings=/settings.xml -DconfigDir=/config exec:java
