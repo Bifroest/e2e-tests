@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  seed:
+    image: cassandra:2.1
+    environment:
+      - DATACENTER=DC1
+      - CASSANDRA_CLUSTER_NAME=bifroest-test
+  
+  node:
+    image: cassandra:2.1
+    environment:
+      - DATACENTER=DC1
+      - CASSANDRA_CLUSTER_NAME=bifroest-test
+      - CASSANDRA_SEEDS=testtest_seed_1
+  
+  aggregator:
+    image: bifroest/aggregator
+    links:
+      - seed
+      - node
+    volumes:
+      - ./config/aggregator:/config
